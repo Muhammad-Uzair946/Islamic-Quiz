@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Islamic Quiz by Buraq</title>
+  <style>
+    :root{
+      --bg1: #d8c036;
+      --card: #fbff08;
+      --accent1: #ffd104;
+      --accent2: #000000;
+      --accent3: #030303;
+      --text: #000000;
+      --muted: #000000;
+      --correct: #00b442; /* green */
+      --wrong: #ff0000;   /* red */
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Urdu", "Noto Sans", "Noto Serif", "Arial";
+      background: radial-gradient(1000px 600px at 10% 10%, rgba(124,58,237,0.14), transparent),
+                  radial-gradient(900px 500px at 90% 90%, rgba(6,182,212,0.08), transparent),
+                  linear-gradient(180deg,var(--bg1), #071029 120%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:32px;
+      min-height:100vh;
+    }
+
+    header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      max-width:1100px;
+      margin:0 auto 20px;
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .logo .mark{
+      width:64px;
+      height:64px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      font-size:20px;
+      box-shadow:0 8px 30px rgba(2,6,23,0.6);
+    }
+
+    h1{
+      margin:0;
+      font-size:20px;
+      line-height:1.05;
+    }
+
+    h1 small{ display:block; font-size:13px; color:var(--muted); margin-top:6px }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    button.btn{
+      background:linear-gradient(90deg,var(--accent2),var(--accent1));
+      border:0;
+      color:rgb(252, 252, 252);
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+      box-shadow:0 6px 18px rgba(12,18,30,0.6);
+    }
+
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1fr 340px;
+      gap:20px;
+      align-items:start;
+    }
+
+    .quiz{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:20px;
+      box-shadow: 0 8px 40px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .question-card{
+      padding:16px;
+      border-radius:12px;
+      margin-bottom:14px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.0));
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    .q-number{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+
+    .q-text{
+      font-size:18px;
+      margin-bottom:8px;
+    }
+
+    .q-urdu{
+      direction:rtl;
+      font-size:17px;
+      color:#000000;
+      opacity:0.95;
+      margin-bottom:12px;
+    }
+
+    .options{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .option{
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.04);
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.0));
+      cursor:pointer;
+      transition:all 180ms ease;
+      text-align:left;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:600;
+    }
+
+    .option:active{ transform:scale(0.997) }
+
+    .option.disabled{ cursor:default; opacity:0.9; }
+
+    .option.correct{
+      background: linear-gradient(90deg, rgba(22,163,74,0.15), rgba(22,163,74,0.08));
+      border-color: rgba(22,163,74,0.5);
+      box-shadow: 0 6px 18px rgba(16,185,129,0.06);
+      color:var(--text);
+    }
+
+    .option.wrong{
+      background: linear-gradient(90deg, rgba(220,38,38,0.12), rgba(220,38,38,0.06));
+      border-color: rgba(220,38,38,0.45);
+      box-shadow: 0 6px 18px rgba(220,38,38,0.05);
+      color:var(--text);
+    }
+
+    .badge{
+      min-width:34px;
+      height:34px;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,0.03);
+      font-weight:800;
+    }
+
+    aside.side{
+      position:sticky;
+      top:32px;
+      height:fit-content;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      border-radius:12px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .stats{
+      display:flex;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .stat{
+      flex:1;
+      padding:10px;
+      border-radius:10px;
+      background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent);
+      text-align:center;
+    }
+
+    .small{ font-size:13px; color:var(--muted) }
+    .big{ font-size:20px; font-weight:800 }
+
+    footer{
+      text-align:center;
+      color:var(--muted);
+      margin-top:24px;
+      font-size:13px;
+    }
+
+    .progress{
+      height:10px;
+      background:rgba(255,255,255,0.03);
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:12px;
+    }
+
+    .progress > i{
+      display:block;
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--accent2),var(--accent1));
+    }
+
+    @media (max-width:980px){
+      .container{ grid-template-columns:1fr; }
+      aside.side{ position:relative; top:0 }
+    }
+
+    /* small helper */
+    .muted{ color:var(--muted); font-size:13px }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="mark">براق</div>
+      <div>
+        <h1>Islamic Quiz <small>by Buraq</small></h1>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="shuffleBtn" title="Shuffle questions">Shuffle</button>
+      <button class="btn" id="resetBtn" title="Reset quiz">Reset</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="quiz" id="quiz">
+      <!-- Questions will be injected here -->
+    </section>
+
+    <aside class="side">
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="small">Score</div>
+            <div class="big" id="score">0</div>
+          </div>
+          <div>
+            <div class="small">Questions</div>
+            <div class="big" id="total">0</div>
+          </div>
+        </div>
+
+        <div class="progress" aria-hidden="true">
+          <i id="progressBar"></i>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="btn" id="showAnswers">Show Answers</button>
+          <button class="btn" id="revealCorrect">Reveal Correct</button>
+        </div>
+
+        <hr style="margin:12px 0; border:none; height:1px; background:rgba(255,255,255,0.03)">
+
+        <div class="muted">Tip: جب آپ غلط جواب منتخب کریں تو وہ ریڈ ہو جائے گا اور صحیح جواب سبز میں دکھائی دے گا۔</div>
+      </div>
+
+      <div style="height:14px"></div>
+
+      <div class="panel">
+        <div class="small">Legend</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <div style="flex:1;text-align:center;padding:8px;border-radius:8px;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.15)">Correct</div>
+          <div style="flex:1;text-align:center;padding:8px;border-radius:8px;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.12)">Wrong</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    Designed with ❤️ by Buraq — Good luck! / نیک تمنائیں
+  </footer>
+
+  <script>
+    // ===== QUESTIONS BANK (English + Urdu) =====
+    const QUESTIONS = [
+   {
+    q_en: "How many pillars of Islam are there?",
+    q_ur: "اسلام کے کتنے ارکان ہیں؟",
+    options: [
+      { en: "3", ur: "۳", correct: false },
+      { en: "4", ur: "۴", correct: false },
+      { en: "5", ur: "۵", correct: true },
+      { en: "6", ur: "۶", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the holy book of Islam called?",
+    q_ur: "اسلام کی مقدس کتاب کو کیا کہتے ہیں؟",
+    options: [
+      { en: "Bible", ur: "بائبل", correct: false },
+      { en: "Quran", ur: "قرآن", correct: true },
+      { en: "Torah", ur: "توراہ", correct: false },
+      { en: "Gita", ur: "گیتا", correct: false }
+    ]
+  },
+  {
+    q_en: "Who is the final prophet in Islam?",
+    q_ur: "اسلام میں آخری نبی کون ہیں؟",
+    options: [
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰ", correct: false },
+      { en: "Prophet Muhammad (PBUH)", ur: "حضرت محمد ﷺ", correct: true },
+      { en: "Prophet Dawud (David)", ur: "حضرت داؤد", correct: false }
+    ]
+  },
+  {
+    q_en: "How many daily prayers are obligatory in Islam?",
+    q_ur: "اسلام میں کتنی نمازیں فرض ہیں؟",
+    options: [
+      { en: "Three", ur: "تین", correct: false },
+      { en: "Four", ur: "چار", correct: false },
+      { en: "Five", ur: "پانچ", correct: true },
+      { en: "Six", ur: "چھ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which month of the Islamic calendar is Ramadan?",
+    q_ur: "اسلامی کیلنڈر میں رمضان کون سا مہینہ ہے؟",
+    options: [
+      { en: "First", ur: "پہلا", correct: false },
+      { en: "Ninth", ur: "نواں", correct: true },
+      { en: "Twelfth", ur: "بارہواں", correct: false },
+      { en: "Tenth", ur: "دسواں", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the first pillar of Islam?",
+    q_ur: "اسلام کا پہلا رکن کیا ہے؟",
+    options: [
+      { en: "Salah (Prayer)", ur: "نماز", correct: false },
+      { en: "Zakat (Charity)", ur: "زکوٰۃ", correct: false },
+      { en: "Shahada (Declaration of Faith)", ur: "کلمہ شہادت", correct: true },
+      { en: "Hajj (Pilgrimage)", ur: "حج", correct: false }
+    ]
+  },
+  {
+    q_en: "Where was Prophet Muhammad (PBUH) born?",
+    q_ur: "حضرت محمد ﷺ کہاں پیدا ہوئے؟",
+    options: [
+      { en: "Madinah", ur: "مدینہ", correct: false },
+      { en: "Makkah", ur: "مکہ", correct: true },
+      { en: "Jerusalem", ur: "یروشلم", correct: false },
+      { en: "Taif", ur: "طائف", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the direction Muslims face during prayer?",
+    q_ur: "مسلمان نماز کے دوران کس سمت کا رخ کرتے ہیں؟",
+    options: [
+      { en: "Jerusalem", ur: "یروشلم", correct: false },
+      { en: "Kaaba in Makkah", ur: "کعبہ (مکہ)", correct: true },
+      { en: "Mount Sinai", ur: "طور پہاڑ", correct: false },
+      { en: "Medina", ur: "مدینہ", correct: false }
+    ]
+  },
+  {
+    q_en: "How many chapters (Surahs) are in the Quran?",
+    q_ur: "قرآن مجید میں کتنی سورتیں ہیں؟",
+    options: [
+      { en: "100", ur: "۱۰۰", correct: false },
+      { en: "114", ur: "۱۱۴", correct: true },
+      { en: "120", ur: "۱۲۰", correct: false },
+      { en: "99", ur: "۹۹", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the name of the miraculous night journey of Prophet Muhammad (PBUH)?",
+    q_ur: "حضرت محمد ﷺ کا معجزاتی رات کا سفر کس نام سے جانا جاتا ہے؟",
+    options: [
+      { en: "Hijrah", ur: "ہجرت", correct: false },
+      { en: "Battle of Badr", ur: "غزوہ بدر", correct: false },
+      { en: "Isra and Miraj", ur: "اسراء و معراج", correct: true },
+      { en: "Treaty of Hudaybiyyah", ur: "صلح حدیبیہ", correct: false }
+    ]
+  },
+   {
+    q_en: "Which angel brought revelation (Wahi) to Prophet Muhammad (PBUH)?",
+    q_ur: "کون سا فرشتہ حضرت محمد ﷺ پر وحی لایا؟",
+    options: [
+      { en: "Angel Mikail", ur: "فرشتہ میکائیل", correct: false },
+      { en: "Angel Israfil", ur: "فرشتہ اسرافیل", correct: false },
+      { en: "Angel Jibreel (Gabriel)", ur: "فرشتہ جبرائیل", correct: true },
+      { en: "Angel Azrael", ur: "فرشتہ عزرائیل", correct: false }
+    ]
+  },
+  {
+    q_en: "Which is the first Surah of the Quran?",
+    q_ur: "قرآن کی پہلی سورت کون سی ہے؟",
+    options: [
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: false },
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: true },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false }
+    ]
+  },
+  {
+    q_en: "What does Zakat mean?",
+    q_ur: "زکوٰۃ کا مطلب کیا ہے؟",
+    options: [
+      { en: "Charity / Almsgiving", ur: "صدقہ / خیرات", correct: true },
+      { en: "Fasting", ur: "روزہ", correct: false },
+      { en: "Pilgrimage", ur: "حج", correct: false },
+      { en: "Prayer", ur: "نماز", correct: false }
+    ]
+  },
+  {
+    q_en: "Which battle was the first major battle in Islam?",
+    q_ur: "اسلام کی پہلی بڑی جنگ کون سی تھی؟",
+    options: [
+      { en: "Battle of Uhud", ur: "غزوہ احد", correct: false },
+      { en: "Battle of Badr", ur: "غزوہ بدر", correct: true },
+      { en: "Battle of Khandaq", ur: "غزوہ خندق", correct: false },
+      { en: "Battle of Hunayn", ur: "غزوہ حنین", correct: false }
+    ]
+  },
+  {
+    q_en: "What does the word 'Islam' mean?",
+    q_ur: "لفظ اسلام کا مطلب کیا ہے؟",
+    options: [
+      { en: "Peace and Submission to Allah", ur: "امن اور اللہ کے آگے سر تسلیم خم کرنا", correct: true },
+      { en: "Knowledge", ur: "علم", correct: false },
+      { en: "Light", ur: "روشنی", correct: false },
+      { en: "Prayer", ur: "نماز", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is called the 'Heart of the Quran'?",
+    q_ur: "کون سی سورت قرآن کا دل کہلاتی ہے؟",
+    options: [
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: true },
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: false },
+      { en: "Surah Ar-Rahman", ur: "سورۃ الرحمن", correct: false },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false }
+    ]
+  },
+  {
+    q_en: "Which city is known as the second holiest city in Islam?",
+    q_ur: "اسلام کا دوسرا مقدس شہر کون سا ہے؟",
+    options: [
+      { en: "Makkah", ur: "مکہ", correct: false },
+      { en: "Madinah", ur: "مدینہ", correct: true },
+      { en: "Jerusalem", ur: "یروشلم", correct: false },
+      { en: "Kufa", ur: "کوفہ", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the Kaaba covered with?",
+    q_ur: "کعبہ کس چیز سے ڈھکا ہوا ہے؟",
+    options: [
+      { en: "White Cloth", ur: "سفید کپڑا", correct: false },
+      { en: "Green Silk", ur: "سبز ریشم", correct: false },
+      { en: "Black Cloth (Kiswah)", ur: "کالی چادر (کسوہ)", correct: true },
+      { en: "Golden Cover", ur: "سنہری غلاف", correct: false }
+    ]
+  },
+  {
+    q_en: "How many years did Prophet Muhammad (PBUH) live?",
+    q_ur: "حضرت محمد ﷺ کتنی عمر تک زندہ رہے؟",
+    options: [
+      { en: "40 years", ur: "۴۰ سال", correct: false },
+      { en: "63 years", ur: "۶۳ سال", correct: true },
+      { en: "70 years", ur: "۷۰ سال", correct: false },
+      { en: "50 years", ur: "۵۰ سال", correct: false }
+    ]
+  },
+  {
+    q_en: "Which month comes after Ramadan?",
+    q_ur: "رمضان کے بعد کون سا مہینہ آتا ہے؟",
+    options: [
+      { en: "Dhul-Hijjah", ur: "ذوالحجہ", correct: false },
+      { en: "Rabi-ul-Awwal", ur: "ربیع الاول", correct: false },
+      { en: "Muharram", ur: "محرم", correct: false },
+      { en: "Shawwal", ur: "شوال", correct: true }
+    ]
+  },
+  {
+    q_en: "Which animal did Prophet Muhammad (PBUH) ride on the night of Isra and Miraj?",
+    q_ur: "حضرت محمد ﷺ نے واقعہ معراج کی رات کس جانور پر سفر کیا؟",
+    options: [
+      { en: "Horse", ur: "گھوڑا", correct: false },
+      { en: "Buraq", ur: "براق", correct: true },
+      { en: "Camel", ur: "اونٹ", correct: false },
+      { en: "Donkey", ur: "گدھا", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is the longest in the Quran?",
+    q_ur: "قرآن کی سب سے لمبی سورت کون سی ہے؟",
+    options: [
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: true },
+      { en: "Surah Al-Imran", ur: "سورۃ آل عمران", correct: false },
+      { en: "Surah An-Nisa", ur: "سورۃ النساء", correct: false },
+      { en: "Surah Al-Maidah", ur: "سورۃ المائدہ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is the shortest in the Quran?",
+    q_ur: "قرآن کی سب سے چھوٹی سورت کون سی ہے؟",
+    options: [
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false },
+      { en: "Surah Al-Kawthar", ur: "سورۃ الکوثر", correct: true },
+      { en: "Surah Al-Asr", ur: "سورۃ العصر", correct: false },
+      { en: "Surah Quraysh", ur: "سورۃ قریش", correct: false }
+    ]
+  },
+  {
+    q_en: "In which cave did Prophet Muhammad (PBUH) receive the first revelation?",
+    q_ur: "حضرت محمد ﷺ کو پہلی وحی کس غار میں نازل ہوئی؟",
+    options: [
+      { en: "Cave Hira", ur: "غار حرا", correct: true },
+      { en: "Cave Thawr", ur: "غار ثور", correct: false },
+      { en: "Cave of Uhud", ur: "غار احد", correct: false },
+      { en: "Cave Nur", ur: "غار نور", correct: false }
+    ]
+  },
+  {
+    q_en: "Which is the first month of the Islamic calendar?",
+    q_ur: "اسلامی کیلنڈر کا پہلا مہینہ کون سا ہے؟",
+    options: [
+      { en: "Ramadan", ur: "رمضان", correct: false },
+      { en: "Muharram", ur: "محرم", correct: true },
+      { en: "Safar", ur: "صفر", correct: false },
+      { en: "Rabi-ul-Awwal", ur: "ربیع الاول", correct: false }
+    ]
+  },
+  {
+    q_en: "Which companion is known as As-Siddiq (The Truthful)?",
+    q_ur: "کون سے صحابی 'صدیق' کہلاتے ہیں؟",
+    options: [
+      { en: "Umar ibn al-Khattab", ur: "حضرت عمرؓ", correct: false },
+      { en: "Ali ibn Abi Talib", ur: "حضرت علیؓ", correct: false },
+      { en: "Uthman ibn Affan", ur: "حضرت عثمانؓ", correct: false },
+      { en: "Abu Bakr", ur: "حضرت ابوبکرؓ", correct: true }
+    ]
+  },
+  {
+    q_en: "Which companion is known as Al-Farooq (The One who Distinguishes Truth from Falsehood)?",
+    q_ur: "کون سے صحابی 'فاروق' کہلاتے ہیں؟",
+    options: [
+      { en: "Ali ibn Abi Talib", ur: "حضرت علیؓ", correct: false },
+      { en: "Umar ibn al-Khattab", ur: "حضرت عمرؓ", correct: true },
+      { en: "Abu Bakr", ur: "حضرت ابوبکرؓ", correct: false },
+      { en: "Uthman ibn Affan", ur: "حضرت عثمانؓ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which prophet built the Kaaba with his son?",
+    q_ur: "کون سے نبی نے اپنے بیٹے کے ساتھ مل کر کعبہ تعمیر کیا؟",
+    options: [
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: true },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the Arabic word for fasting?",
+    q_ur: "روزے کے لیے عربی لفظ کیا ہے؟",
+    options: [
+      { en: "Hajj", ur: "حج", correct: false },
+      { en: "Sawm", ur: "صوم", correct: true },
+      { en: "Zakat", ur: "زکوٰۃ", correct: false },
+      { en: "Shahada", ur: "شہادت", correct: false }
+    ]
+  },
+  {
+    q_en: "Which city is known as Al-Quds in Arabic?",
+    q_ur: "کس شہر کو عربی میں القدس کہا جاتا ہے؟",
+    options: [
+      { en: "Madinah", ur: "مدینہ", correct: false },
+      { en: "Makkah", ur: "مکہ", correct: false },
+      { en: "Jerusalem", ur: "یروشلم", correct: true },
+      { en: "Baghdad", ur: "بغداد", correct: false }
+    ]
+  },
+   {
+    q_en: "Which Prophet was swallowed by a big fish (whale)?",
+    q_ur: "کون سے نبی کو ایک بڑی مچھلی نے نگل لیا تھا؟",
+    options: [
+      { en: "Prophet Yunus (Jonah)", ur: "حضرت یونسؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which angel is responsible for blowing the trumpet on the Day of Judgment?",
+    q_ur: "قیامت کے دن صور پھونکنے والا فرشتہ کون ہے؟",
+    options: [
+      { en: "Angel Mikail", ur: "فرشتہ میکائیل", correct: false },
+      { en: "Angel Israfil", ur: "فرشتہ اسرافیل", correct: true },
+      { en: "Angel Jibreel", ur: "فرشتہ جبرائیل", correct: false },
+      { en: "Angel Azrael", ur: "فرشتہ عزرائیل", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is called 'Ar-Rahman'?",
+    q_ur: "کون سی سورت 'الرحمٰن' کہلاتی ہے؟",
+    options: [
+      { en: "Surah Rahman", ur: "سورۃ الرحمٰن", correct: true },
+      { en: "Surah Noor", ur: "سورۃ النور", correct: false },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah Falaq", ur: "سورۃ الفلق", correct: false }
+    ]
+  },
+  {
+    q_en: "How many years did Prophet Nuh (Noah) preach to his people?",
+    q_ur: "حضرت نوحؑ نے اپنی قوم کو کتنے سال تبلیغ کی؟",
+    options: [
+      { en: "100 years", ur: "۱۰۰ سال", correct: false },
+      { en: "950 years", ur: "۹۵۰ سال", correct: true },
+      { en: "500 years", ur: "۵۰۰ سال", correct: false },
+      { en: "300 years", ur: "۳۰۰ سال", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the name of the well near the Kaaba?",
+    q_ur: "کعبہ کے قریب کنویں کا کیا نام ہے؟",
+    options: [
+      { en: "Well of Zamzam", ur: "زم زم کا کنواں", correct: true },
+      { en: "Well of Baraka", ur: "برکت کا کنواں", correct: false },
+      { en: "Well of Hira", ur: "حرا کا کنواں", correct: false },
+      { en: "Well of Safa", ur: "صفا کا کنواں", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet’s staff (stick) turned into a snake?",
+    q_ur: "کس نبی کا عصا (چھڑی) سانپ میں بدل گیا تھا؟",
+    options: [
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: true },
+      { en: "Prophet Harun (Aaron)", ur: "حضرت ہارونؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is known as the Surah of Sincerity?",
+    q_ur: "کون سی سورت اخلاص کی سورت کہلاتی ہے؟",
+    options: [
+      { en: "Surah Al-Asr", ur: "سورۃ العصر", correct: false },
+      { en: "Surah Al-Falaq", ur: "سورۃ الفلق", correct: false },
+      { en: "Surah An-Naas", ur: "سورۃ الناس", correct: false },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: true }
+    ]
+  },
+  {
+    q_en: "Which Prophet was given the Zabur?",
+    q_ur: "کس نبی کو زبور دی گئی؟",
+    options: [
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was born without a father?",
+    q_ur: "کون سے نبی بغیر والد کے پیدا ہوئے؟",
+    options: [
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Yusuf (Joseph)", ur: "حضرت یوسفؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was tested with illness and patience?",
+    q_ur: "کس نبی کو بیماری اور صبر کے ذریعے آزمایا گیا؟",
+    options: [
+      { en: "Prophet Ishaq (Isaac)", ur: "حضرت اسحاقؑ", correct: false },
+      { en: "Prophet Ayyub (Job)", ur: "حضرت ایوبؑ", correct: true },
+      { en: "Prophet Yusuf (Joseph)", ur: "حضرت یوسفؑ", correct: false },
+      { en: "Prophet Harun (Aaron)", ur: "حضرت ہارونؑ", correct: false }
+    ]
+  },
+   {
+    q_en: "Which Prophet was known for interpreting dreams?",
+    q_ur: "کون سے نبی خوابوں کی تعبیر کے لیے مشہور تھے؟",
+    options: [
+      { en: "Prophet Yusuf (Joseph)", ur: "حضرت یوسفؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was thrown into the fire but was unharmed?",
+    q_ur: "کون سے نبی کو آگ میں ڈالا گیا مگر وہ محفوظ رہے؟",
+    options: [
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: true },{ en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: true }
+    ]
+  },
+  {
+    q_en: "Which Surah is called the 'Mother of the Quran'?",
+    q_ur: "کون سی سورت 'ام القرآن' کہلاتی ہے؟",
+    options: [
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: false },
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: true },
+      { en: "Surah An-Nisa", ur: "سورۃ النساء", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet built a huge ship by Allah’s command?",
+    q_ur: "کس نبی نے اللہ کے حکم سے ایک بڑی کشتی بنائی؟",
+    options: [
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet could talk to animals and jinn?",
+    q_ur: "کون سے نبی جانوروں اور جنات سے بات کر سکتے تھے؟",
+    options: [
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false },
+      { en: "Prophet Sulaiman (Solomon)", ur: "حضرت سلیمانؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is recited for protection from envy and evil eye?",
+    q_ur: "کون سی سورت حسد اور نظر بد سے بچاؤ کے لیے پڑھی جاتی ہے؟",
+    options: [
+      { en: "Surah Al-Falaq", ur: "سورۃ الفلق", correct: true },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah An-Naas", ur: "سورۃ الناس", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is recited for protection from jinn?",
+    q_ur: "کون سی سورت جنات سے بچاؤ کے لیے پڑھی جاتی ہے؟",
+    options: [
+      { en: "Surah Al-Falaq", ur: "سورۃ الفلق", correct: false },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false },
+      { en: "Surah An-Naas", ur: "سورۃ الناس", correct: true },
+      { en: "Surah Rahman", ur: "سورۃ الرحمٰن", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was able to soften iron by Allah’s will?",
+    q_ur: "کس نبی کو اللہ کے حکم سے لوہا نرم کرنے کی طاقت دی گئی؟",
+    options: [
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Sulaiman (Solomon)", ur: "حضرت سلیمانؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is often called the 'Bride of the Quran'?",
+    q_ur: "کون سی سورت 'عروس القرآن' کہلاتی ہے؟",
+    options: [
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: false },
+      { en: "Surah Ar-Rahman", ur: "سورۃ الرحمٰن", correct: true },
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was known as 'Kaleemullah' (The one who spoke to Allah)?",
+    q_ur: "کون سے نبی 'کلیم اللہ' کہلاتے ہیں؟",
+    options: [
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: true },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: true }
+    ]
+  },
+   {
+    q_en: "Which Prophet was known as the father of prophets?",
+    q_ur: "کون سے نبی 'ابوالانبیاء' کہلاتے ہیں؟",
+    options: [
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: true },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: true },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false },
+      { en: "Prophet Adam", ur: "حضرت آدمؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was the first man created by Allah?",
+    q_ur: "اللہ کے بنائے ہوئے سب سے پہلے انسان کون تھے؟",
+    options: [
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false },
+      { en: "Prophet Adam", ur: "حضرت آدمؑ", correct: true },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Idris (Enoch)", ur: "حضرت ادریسؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah has no Bismillah at the beginning?",
+    q_ur: "کون سی سورت کے شروع میں بسم اللہ نہیں ہے؟",
+    options: [
+      { en: "Surah At-Tawbah", ur: "سورۃ التوبہ", correct: true },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah Ar-Rahman", ur: "سورۃ الرحمٰن", correct: false },
+      { en: "Surah An-Nisa", ur: "سورۃ النساء", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was given the Injeel (Gospel)?",
+    q_ur: "کس نبی کو انجیل دی گئی؟",
+    options: [
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: true },
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was given the Torah?",
+    q_ur: "کس نبی کو تورات دی گئی؟",
+    options: [
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: true },
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was known as the first to write with a pen?",
+    q_ur: "کون سے نبی سب سے پہلے قلم سے لکھنے والے تھے؟",
+    options: [
+      { en: "Prophet Idris (Enoch)", ur: "حضرت ادریسؑ", correct: true },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Yusuf (Joseph)", ur: "حضرت یوسفؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "How many daily prayers (Salah) are obligatory in Islam?",
+    q_ur: "اسلام میں کتنی نمازیں فرض ہیں؟",
+    options: [
+      { en: "3", ur: "۳", correct: false },
+      { en: "5", ur: "۵", correct: true },
+      { en: "7", ur: "۷", correct: false },
+      { en: "6", ur: "۶", correct: false }
+    ]
+  },
+  {
+    q_en: "Which angel takes the soul at the time of death?",
+    q_ur: "موت کے وقت روح قبض کرنے والا فرشتہ کون ہے؟",
+    options: [
+      { en: "Angel Mikail", ur: "فرشتہ میکائیل", correct: false },
+      { en: "Angel Israfil", ur: "فرشتہ اسرافیل", correct: false },
+      { en: "Angel Azrael", ur: "فرشتہ عزرائیل", correct: true },
+      { en: "Angel Jibreel", ur: "فرشتہ جبرائیل", correct: false }
+    ]
+  },
+  {
+    q_en: "Which is the holiest night in Ramadan?",
+    q_ur: "رمضان کی سب سے بابرکت رات کون سی ہے؟",
+    options: [
+      { en: "Shab-e-Barat", ur: "شب برات", correct: false },
+      { en: "Laylat al-Qadr (Night of Power)", ur: "شب قدر", correct: true },
+      { en: "Shab-e-Miraj", ur: "شب معراج", correct: false },
+      { en: "Jumma Night", ur: "جمعہ کی رات", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was known for his beautiful voice in reciting Zabur?",
+    q_ur: "کس نبی کی زبور پڑھنے کی آواز بہت خوبصورت تھی؟",
+    options: [
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: true },
+      { en: "Prophet Sulaiman (Solomon)", ur: "حضرت سلیمانؑ", correct: false },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was known for his patience?",
+    q_ur: "کون سے نبی صبر کے لیے مشہور تھے؟",
+    options: [
+      { en: "Prophet Yusuf (Joseph)", ur: "حضرت یوسفؑ", correct: false },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false },
+      { en: "Prophet Ayyub (Job)", ur: "حضرت ایوبؑ", correct: true }
+    ]
+  },
+  {
+    q_en: "Which Surah was revealed completely in one night?",
+    q_ur: "کون سی سورت ایک ہی رات میں مکمل نازل ہوئی؟",
+    options: [
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: false },
+      { en: "Surah Al-Qadr", ur: "سورۃ القدر", correct: false },
+      { en: "Surah Al-An'am", ur: "سورۃ الانعام", correct: true },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was swallowed by a fish and later rescued?",
+    q_ur: "کس نبی کو مچھلی نے نگلا اور بعد میں بچا لیا گیا؟",
+    options: [
+      { en: "Prophet Yunus (Jonah)", ur: "حضرت یونسؑ", correct: true },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Idris (Enoch)", ur: "حضرت ادریسؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet’s wife was turned into a pillar of salt?",
+    q_ur: "کس نبی کی بیوی نمک کے ستون میں بدل گئی؟",
+    options: [
+      { en: "Prophet Lut (Lot)", ur: "حضرت لوطؑ", correct: true },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: false },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "How many Surahs are there in the Quran?",
+    q_ur: "قرآن میں کتنی سورتیں ہیں؟",
+    options: [
+      { en: "100", ur: "۱۰۰", correct: false },
+      { en: "114", ur: "۱۱۴", correct: true },
+      { en: "120", ur: "۱۲۰", correct: false },
+      { en: "99", ur: "۹۹", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is known as 'Surah of Unity'?",
+    q_ur: "کون سی سورت توحید کی سورت کہلاتی ہے؟",
+    options: [
+      { en: "Surah Al-Falaq", ur: "سورۃ الفلق", correct: false },
+      { en: "Surah An-Naas", ur: "سورۃ الناس", correct: false },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: true },
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was able to cure the blind and sick by Allah’s will?",
+    q_ur: "کس نبی کو اللہ کے حکم سے اندھوں اور بیماروں کو شفا دینے کی طاقت دی گئی؟",
+    options: [
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: true },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which is the last Surah of the Quran?",
+    q_ur: "قرآن کی آخری سورت کون سی ہے؟",
+    options: [
+      { en: "Surah Al-Falaq", ur: "سورۃ الفلق", correct: false },
+      { en: "Surah An-Naas", ur: "سورۃ الناس", correct: true },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false },
+      { en: "Surah At-Takathur", ur: "سورۃ التکاثر", correct: false }
+    ]
+  },
+  {
+    q_en: "How many verses (Ayahs) are there in the Quran?",
+    q_ur: "قرآن میں کتنی آیات ہیں؟",
+    options: [
+      { en: "6666", ur: "۶۶۶۶", correct: true },
+      { en: "6236", ur: "۶۲۳۶", correct: false},
+      { en: "7000", ur: "۷۰۰۰", correct: false },
+      { en: "6000", ur: "۶۰۰۰", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet was born circumcised?",
+    q_ur: "کون سے نبی ختنہ شدہ پیدا ہوئے؟",
+    options: [
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false },
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Muhammad (PBUH)", ur: "حضرت محمد ﷺ", correct: true }
+    ]
+  },
+   {
+    q_en: "Which Surah is called the 'Heart of the Quran'?",
+    q_ur: "کون سی سورت قرآن کا دل کہلاتی ہے؟",
+    options: [
+      { en: "Surah Ar-Rahman", ur: "سورۃ الرحمٰن", correct: false },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: true },
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: false },
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet could speak to animals and control jinn by Allah’s will?",
+    q_ur: "کون سے نبی اللہ کے حکم سے جانوروں سے بات کرتے اور جنات پر قابو رکھتے تھے؟",
+    options: [
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Dawood (David)", ur: "حضرت داؤدؑ", correct: false },
+      { en: "Prophet Sulaiman (Solomon)", ur: "حضرت سلیمانؑ", correct: true },
+      { en: "Prophet Isa (Jesus)", ur: "حضرت عیسیٰؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is the longest Surah in the Quran?",
+    q_ur: "قرآن کی سب سے لمبی سورت کون سی ہے؟",
+    options: [
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: true },
+      { en: "Surah Al-Imran", ur: "سورۃ آل عمران", correct: false },
+      { en: "Surah An-Nisa", ur: "سورۃ النساء", correct: false },
+      { en: "Surah Yunus", ur: "سورۃ یونس", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is the shortest in the Quran?",
+    q_ur: "قرآن کی سب سے چھوٹی سورت کون سی ہے؟",
+    options: [
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false },
+      { en: "Surah Al-Kawthar", ur: "سورۃ الکوثر", correct: true },
+      { en: "Surah An-Naas", ur: "سورۃ الناس", correct: false },
+      { en: "Surah Al-Asr", ur: "سورۃ العصر", correct: false }
+    ]
+  },
+  {
+    q_en: "Which battle was the first in Islam?",
+    q_ur: "اسلام کی پہلی جنگ کون سی تھی؟",
+    options: [
+      { en: "Battle of Badr", ur: "غزوہ بدر", correct: true },
+      { en: "Battle of Uhud", ur: "غزوہ احد", correct: false },
+      { en: "Battle of Khandaq", ur: "غزوہ خندق", correct: false },
+      { en: "Battle of Hunayn", ur: "غزوہ حنین", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is called the 'Bride of the Quran'?",
+    q_ur: "کون سی سورت قرآن کی دلہن کہلاتی ہے؟",
+    options: [
+      { en: "Surah Ar-Rahman", ur: "سورۃ الرحمٰن", correct: true },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah Al-Mulk", ur: "سورۃ الملک", correct: false },
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: false }
+    ]
+  },
+  {
+    q_en: "How many sons did Prophet Yaqub (Jacob) have?",
+    q_ur: "حضرت یعقوبؑ کے کتنے بیٹے تھے؟",
+    options: [
+      { en: "10", ur: "۱۰", correct: false },
+      { en: "12", ur: "۱۲", correct: true },
+      { en: "11", ur: "۱۱", correct: false },
+      { en: "9", ur: "۹", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is called the 'Mother of the Book'?",
+    q_ur: "کون سی سورت 'ام الکتاب' کہلاتی ہے؟",
+    options: [
+      { en: "Surah Al-Fatiha", ur: "سورۃ الفاتحہ", correct: true },
+      { en: "Surah Al-Baqarah", ur: "سورۃ البقرہ", correct: false },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah Al-Ikhlas", ur: "سورۃ الاخلاص", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Prophet built the Ark to survive the flood?",
+    q_ur: "کس نبی نے طوفان سے بچنے کے لیے کشتی بنائی؟",
+    options: [
+      { en: "Prophet Ibrahim (Abraham)", ur: "حضرت ابراہیمؑ", correct: false },
+      { en: "Prophet Musa (Moses)", ur: "حضرت موسیٰؑ", correct: false },
+      { en: "Prophet Nuh (Noah)", ur: "حضرت نوحؑ", correct: true },
+      { en: "Prophet Yunus (Jonah)", ur: "حضرت یونسؑ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which Surah is recommended to be recited on Friday?",
+    q_ur: "جمعہ کے دن کون سی سورت پڑھنے کی سفارش کی گئی ہے؟",
+    options: [
+      { en: "Surah Al-Kahf", ur: "سورۃ الکہف", correct: true },
+      { en: "Surah Yaseen", ur: "سورۃ یٰسین", correct: false },
+      { en: "Surah Ar-Rahman", ur: "سورۃ الرحمٰن", correct: false },
+      { en: "Surah Al-Mulk", ur: "سورۃ الملک", correct: false }
+    ]
+  },
+    {
+    q_en: "Which city is known as the birthplace of Prophet Muhammad (PBUH)?",
+    q_ur: "حضرت محمد ﷺ کی پیدائش کس شہر میں ہوئی؟",
+    options: [
+      { en: "Makkah", ur: "مکہ", correct: true },
+      { en: "Madinah", ur: "مدینہ", correct: false },
+      { en: "Jerusalem", ur: "بیت المقدس", correct: false },
+      { en: "Taif", ur: "طائف", correct: false }
+    ]
+  },
+  {
+    q_en: "Which city is known as the city of the Prophet (Madinat un-Nabi)?",
+    q_ur: "کون سا شہر مدینۃ النبی کہلاتا ہے؟",
+    options: [
+      { en: "Makkah", ur: "مکہ", correct: false },
+      { en: "Madinah", ur: "مدینہ", correct: true },
+      { en: "Baghdad", ur: "بغداد", correct: false },
+      { en: "Damascus", ur: "دمشق", correct: false }
+    ]
+  },
+  {
+    q_en: "How old was Prophet Muhammad (PBUH) when he received the first revelation?",
+    q_ur: "حضرت محمد ﷺ کی عمر کتنی تھی جب پہلی وحی نازل ہوئی؟",
+    options: [
+      { en: "30 years", ur: "۳۰ سال", correct: false },
+      { en: "40 years", ur: "۴۰ سال", correct: true },
+      { en: "35 years", ur: "۳۵ سال", correct: false },
+      { en: "45 years", ur: "۴۵ سال", correct: false }
+    ]
+  },
+  {
+    q_en: "What is the name of the cave where the first revelation was received?",
+    q_ur: "وہ غار کا کیا نام ہے جہاں پہلی وحی نازل ہوئی؟",
+    options: [
+      { en: "Cave Hira", ur: "غارِ حرا", correct: true },
+      { en: "Cave Thawr", ur: "غارِ ثور", correct: false },
+      { en: "Cave Ashab-e-Kahf", ur: "غارِ اصحاب کہف", correct: false },
+      { en: "Cave Sinai", ur: "غارِ سینا", correct: false }
+    ]
+  },
+  {
+    q_en: "What was the first word revealed of the Quran?",
+    q_ur: "قرآن کا سب سے پہلا لفظ کون سا نازل ہوا؟",
+    options: [
+      { en: "Iqra (Read)", ur: "اقْرَأْ", correct: true },
+      { en: "Allahu Akbar", ur: "اللّٰہ اکبر", correct: false },
+      { en: "SubhanAllah", ur: "سبحان اللہ", correct: false },
+      { en: "Bismillah", ur: "بسم اللہ", correct: false }
+    ]
+  },
+  {
+    q_en: "Who was the first person to accept Islam?",
+    q_ur: "اسلام قبول کرنے والے سب سے پہلے شخص کون تھے؟",
+    options: [
+      { en: "Hazrat Abu Bakr (RA)", ur: "حضرت ابوبکرؓ", correct: false },
+      { en: "Hazrat Khadijah (RA)", ur: "حضرت خدیجہؓ", correct: true },
+      { en: "Hazrat Ali (RA)", ur: "حضرت علیؓ", correct: false },
+      { en: "Hazrat Bilal (RA)", ur: "حضرت بلالؓ", correct: false }
+    ]
+  },
+  {
+    q_en: "Which uncle of Prophet Muhammad (PBUH) supported him in Makkah?",
+    q_ur: "حضرت محمد ﷺ کے کس چچا نے مکہ میں ان کی حمایت کی؟",
+    options: [
+      { en: "Abu Talib", ur: "ابو طالب", correct: true },
+      { en: "Abu Lahab", ur: "ابو لہب", correct: false },
+      { en: "Hamza", ur: "حمزہؓ", correct: false },
+      { en: "Abbas", ur: "عباسؓ", correct: false }
+    ]
+  },
+  {
+    q_en: "What was the name of Prophet Muhammad’s (PBUH) mother?",
+    q_ur: "حضرت محمد ﷺ کی والدہ کا کیا نام تھا؟",
+    options: [
+      { en: "Ayesha bint Abi Bakr", ur: "عائشہ بنت ابوبکر", correct: false },
+      { en: "Khadijah bint Khuwaylid", ur: "خدیجہ بنت خویلد", correct: false },
+      { en: "Aminah bint Wahb", ur: "آمنہ بنت وہب", correct: true },
+      { en: "Fatimah bint Asad", ur: "فاطمہ بنت اسد", correct: false }
+    ]
+  },
+  {
+    q_en: "What was the name of Prophet Muhammad’s (PBUH) father?",
+    q_ur: "حضرت محمد ﷺ کے والد کا کیا نام تھا؟",
+    options: [
+      { en: "Ibrahim", ur: "ابراہیم", correct: false },
+      { en: "Abdul Muttalib", ur: "عبدالمطلب", correct: false },
+      { en: "Abu Talib", ur: "ابو طالب", correct: false },
+      { en: "Abdullah ibn Abd al-Muttalib", ur: "عبداللہ بن عبدالمطلب", correct: true }
+    ]
+  },
+  {
+    q_en: "Who was the wet nurse of Prophet Muhammad (PBUH)?",
+    q_ur: "حضرت محمد ﷺ کی رضاعی ماں کون تھیں؟",
+    options: [
+      { en: "Halima Sadia", ur: "حلیمہ سعدیہ", correct: true },
+      { en: "Amina bint Wahb", ur: "آمنہ بنت وہب", correct: false },
+      { en: "Safiyyah bint Abdul Muttalib", ur: "صفیہ بنت عبدالمطلب", correct: false },
+      { en: "Khadijah bint Khuwaylid", ur: "خدیجہ بنت خویلد", correct: false }
+    ]
+  },
+  {
+    q_en: "Who was the first caliph of Islam?",
+    q_ur: "اسلام کے پہلے خلیفہ کون تھے؟",
+    options: [
+      { en: "Abu Bakr (RA)", ur: "حضرت ابوبکرؓ", correct: true },
+      { en: "Umar ibn Khattab (RA)", ur: "حضرت عمرؓ", correct: false },
+      { en: "Uthman ibn Affan (RA)", ur: "حضرت عثمانؓ", correct: false },
+      { en: "Ali ibn Abi Talib (RA)", ur: "حضرت علیؓ", correct: false }
+    ]
+  },
+  {
+    q_en: "Who was the second caliph of Islam?",
+    q_ur: "اسلام کے دوسرے خلیفہ کون تھے؟",
+    options: [
+      { en: "Abu Bakr (RA)", ur: "حضرت ابوبکرؓ", correct: false },
+      { en: "Umar ibn Khattab (RA)", ur: "حضرت عمرؓ", correct: true },
+      { en: "Uthman ibn Affan (RA)", ur: "حضرت عثمانؓ", correct: false },
+      { en: "Ali ibn Abi Talib (RA)", ur: "حضرت علیؓ", correct: false }
+    ]
+  },
+  {
+    q_en: "Who was the third caliph of Islam?",
+    q_ur: "اسلام کے تیسرے خلیفہ کون تھے؟",
+    options: [
+      { en: "Umar ibn Khattab (RA)", ur: "حضرت عمرؓ", correct: false },
+      { en: "Abu Bakr (RA)", ur: "حضرت ابوبکرؓ", correct: false },
+      { en: "Uthman ibn Affan (RA)", ur: "حضرت عثمانؓ", correct: true },
+      { en: "Ali ibn Abi Talib (RA)", ur: "حضرت علیؓ", correct: false }
+    ]
+  },
+  {
+    q_en: "Who was the fourth caliph of Islam?",
+    q_ur: "اسلام کے چوتھے خلیفہ کون تھے؟",
+    options: [
+      { en: "Abu Bakr (RA)", ur: "حضرت ابوبکرؓ", correct: false },
+      { en: "Uthman ibn Affan (RA)", ur: "حضرت عثمانؓ", correct: false },
+      { en: "Umar ibn Khattab (RA)", ur: "حضرت عمرؓ", correct: false },
+      { en: "Ali ibn Abi Talib (RA)", ur: "حضرت علیؓ", correct: true }
+    ]
+  },
+  {
+    q_en: "In which year was the Hijrah (migration to Madinah)?",
+    q_ur: "ہجرت مدینہ کس سال میں ہوئی؟",
+    options: [
+      { en: "610 CE", ur: "۶۱۰ عیسوی", correct: false },
+      { en: "622 CE", ur: "۶۲۲ عیسوی", correct: true },
+      { en: "630 CE", ur: "۶۳۰ عیسوی", correct: false },
+      { en: "615 CE", ur: "۶۱۵ عیسوی", correct: false }
+    ]
+  },
+  {
+    q_en: "Which battle was fought in the 2nd year of Hijrah?",
+    q_ur: "ہجرت کے دوسرے سال کون سی جنگ لڑی گئی؟",
+    options: [
+      { en: "Battle of Hunayn", ur: "غزوہ حنین", correct: false },
+      { en: "Battle of Uhud", ur: "غزوہ احد", correct: false },
+      { en: "Battle of Khandaq", ur: "غزوہ خندق", correct: false },
+      { en: "Battle of Badr", ur: "غزوہ بدر", correct: true }
+    ]
+  },
+  {
+    q_en: "Which battle is also called the Battle of the Trench?",
+    q_ur: "کون سی جنگ غزوہ خندق کہلاتی ہے؟",
+    options: [
+      { en: "Battle of Uhud", ur: "غزوہ احد", correct: false },
+      { en: "Battle of Khandaq", ur: "غزوہ خندق", correct: true },
+      { en: "Battle of Badr", ur: "غزوہ بدر", correct: false },
+      { en: "Battle of Tabuk", ur: "غزوہ تبوک", correct: false }
+    ]
+  },
+  {
+    q_en: "Which battle was the last battle led by Prophet Muhammad (PBUH)?",
+    q_ur: "حضرت محمد ﷺ کی قیادت میں آخری جنگ کون سی تھی؟",
+    options: [
+      { en: "Battle of Uhud", ur: "غزوہ احد", correct: false },
+      { en: "Battle of Hunayn", ur: "غزوہ حنین", correct: false },
+      { en: "Battle of Tabuk", ur: "غزوہ تبوک", correct: true },
+      { en: "Battle of Badr", ur: "غزوہ بدر", correct: false }
+    ]
+  },
+  {
+    q_en: "Which treaty was signed between Muslims and Quraysh in 6 AH?",
+    q_ur: "مسلمانوں اور قریش کے درمیان ۶ ہجری میں کون سا معاہدہ ہوا؟",
+    options: [
+      { en: "Treaty of Taif", ur: "معاہدہ طائف", correct: false },
+      { en: "Treaty of Aqabah", ur: "بیعت عقبہ", correct: false },
+      { en: "Treaty of Madinah", ur: "میثاق مدینہ", correct: false },
+      { en: "Treaty of Hudaybiyyah", ur: "صلح حدیبیہ", correct: true }
+    ]
+  },
+  {
+    q_en: "In which year did Prophet Muhammad (PBUH) pass away?",
+    q_ur: "حضرت محمد ﷺ کا وصال کس سال ہوا؟",
+    options: [
+      { en: "622 CE", ur: "۶۲۲ عیسوی", correct: false },
+      { en: "632 CE", ur: "۶۳۲ عیسوی", correct: true },
+      { en: "630 CE", ur: "۶۳۰ عیسوی", correct: false },
+      { en: "634 CE", ur: "۶۳۴ عیسوی", correct: false }
+    ]
+  }
+        
+    ];
+
+    // ===== App State =====
+    let state = {
+      questions: [],
+      score: 0,
+      answered: 0
+    };
+
+    // Utility to deep clone questions (so reset works)
+    function cloneQuestions(src){
+      return src.map(q => ({
+        q_en: q.q_en,
+        q_ur: q.q_ur,
+        options: q.options.map(opt => ({...opt}))
+      }));
+    }
+
+    // Render functions
+    const quizEl = document.getElementById('quiz');
+    const scoreEl = document.getElementById('score');
+    const totalEl = document.getElementById('total');
+    const progressBar = document.getElementById('progressBar');
+
+    function init(){
+      state.questions = shuffleArray(cloneQuestions(QUESTIONS));
+      state.score = 0;
+      state.answered = 0;
+      renderQuiz();
+      updateStats();
+    }
+
+    function renderQuiz(){
+      quizEl.innerHTML = '';
+      state.questions.forEach((q, idx) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.dataset.index = idx;
+
+        const number = document.createElement('div');
+        number.className = 'q-number';
+        number.innerHTML = `<div class="badge">${idx+1}</div><div style="font-size:13px;color:var(--muted)">Question / سوال</div>`;
+
+        const qtext = document.createElement('div');
+        qtext.className = 'q-text';
+        qtext.innerHTML = q.q_en;
+
+        const qurdu = document.createElement('div');
+        qurdu.className = 'q-urdu';
+        qurdu.innerHTML = q.q_ur;
+
+        const opts = document.createElement('div');
+        opts.className = 'options';
+
+        q.options.forEach((opt, oi) => {
+          const o = document.createElement('button');
+          o.type = 'button';
+          o.className = 'option';
+          o.innerHTML = `<div style="min-width:22px;font-weight:800">${String.fromCharCode(65+oi)}</div>
+                         <div style="flex:1;text-align:left">
+                           <div style="font-size:15px">${opt.en}</div>
+                           <div style="font-size:14px;color:var(--muted);direction:rtl">${opt.ur}</div>
+                         </div>`;
+          o.dataset.correct = opt.correct ? '1' : '0';
+          o.dataset.q = idx;
+          o.dataset.o = oi;
+          o.addEventListener('click', onSelectOption);
+          opts.appendChild(o);
+        });
+
+        card.appendChild(number);
+        card.appendChild(qtext);
+        card.appendChild(qurdu);
+        card.appendChild(opts);
+        quizEl.appendChild(card);
+      });
+
+      totalEl.textContent = state.questions.length;
+    }
+
+    // Option selection handler
+    function onSelectOption(e){
+      const btn = e.currentTarget;
+      const qIndex = Number(btn.dataset.q);
+      const oIndex = Number(btn.dataset.o);
+
+      const questionCard = quizEl.querySelector(`.question-card[data-index="${qIndex}"]`);
+      if(questionCard.classList.contains('answered')) return;
+
+      const options = Array.from(questionCard.querySelectorAll('.option'));
+      const selectedIsCorrect = btn.dataset.correct === '1';
+
+      if(selectedIsCorrect){
+        // Mark selected green
+        btn.classList.add('correct');
+        state.score += 1;
+      }else{
+        // Mark selected red
+        btn.classList.add('wrong');
+        // find correct and mark green
+        const correctBtn = options.find(x => x.dataset.correct === '1');
+        if(correctBtn) correctBtn.classList.add('correct');
+      }
+
+      // disable all options for this question
+      options.forEach(x => x.classList.add('disabled'));
+      questionCard.classList.add('answered');
+      state.answered += 1;
+      updateStats();
+    }
+
+    function updateStats(){
+      scoreEl.textContent = state.score;
+      const pct = Math.round((state.answered / state.questions.length) * 100);
+      progressBar.style.width = pct + '%';
+    }
+
+    // Shuffle and Reset
+    function resetQuiz(){
+      state.questions = cloneQuestions(QUESTIONS);
+      state.score = 0;
+      state.answered = 0;
+      renderQuiz();
+      updateStats();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function shuffleArray(arr){
+      // Fisher-Yates
+      for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i+1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Button functions
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if(confirm('Reset the quiz? / کیا آپ کوئز ری سیٹ کرنا چاہتے ہیں؟')) {
+        resetQuiz();
+      }
+    });
+
+    document.getElementById('shuffleBtn').addEventListener('click', () => {
+      state.questions = shuffleArray(state.questions);
+      renderQuiz();
+      updateStats();
+    });
+
+    document.getElementById('showAnswers').addEventListener('click', () => {
+      // reveal answers but do not change score/answered
+      document.querySelectorAll('.question-card').forEach(card => {
+        const opts = Array.from(card.querySelectorAll('.option'));
+        opts.forEach(opt => {
+          opt.classList.add('disabled');
+          if(opt.dataset.correct === '1') opt.classList.add('correct');
+          else {
+            // if user had selected wrong already, maintain wrong color; otherwise keep neutral
+            if(opt.classList.contains('wrong')){} // keep it
+            else opt.classList.remove('wrong');
+          }
+        });
+        card.classList.add('answered');
+      });
+    });
+
+    document.getElementById('revealCorrect').addEventListener('click', () => {
+      document.querySelectorAll('.option').forEach(opt => {
+        if(opt.dataset.correct === '1') opt.classList.add('correct');
+      });
+    });
+
+    // Initialize on page load
+    init();
+
+    // Accessibility: keyboard navigation (Enter/Space to select)
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' '){
+        const el = document.activeElement;
+        if(el && el.classList && el.classList.contains('option') && !el.classList.contains('disabled')){
+          el.click();
+          e.preventDefault();
+        }
+      }
+    });
+
+    // Make question cards highlight on focus for keyboard users
+    document.addEventListener('focusin', (e) => {
+      if(e.target.classList && e.target.classList.contains('option')){
+        e.target.style.outline = '2px solid rgba(255,255,255,0.06)';
+      }
+    });
+    document.addEventListener('focusout', (e) => {
+      if(e.target.classList && e.target.classList.contains('option')){
+        e.target.style.outline = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
+
+</body>
+</html>
